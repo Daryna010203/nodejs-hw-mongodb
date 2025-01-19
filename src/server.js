@@ -2,7 +2,7 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 import { getEnvVar } from './utils/getEnvVar.js';
-import { ContactsCollection } from './db/models/contacts.js';
+import { getAllContacts, getContactByID } from './services/contacts.js';
 
 const PORT = Number(getEnvVar('PORT', '3000'));
 
@@ -19,12 +19,6 @@ export const setupServer = () => {
       },
     }),
   );
-
-  app.get('/', (req, res) => {
-    res.json({
-      message: 'Hello, World!',
-    });
-  });
 
   app.get('/contacts', async (req, res) => {
     const contacts = await getAllContacts();
@@ -66,14 +60,4 @@ export const setupServer = () => {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
-};
-
-const getAllContacts = async () => {
-  const contacts = await ContactsCollection.find();
-  return contacts;
-};
-
-const getContactByID = async (contactId) => {
-  const contact = await ContactsCollection.findById(contactId);
-  return contact;
 };
