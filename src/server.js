@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { json } from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 
@@ -12,7 +12,12 @@ const PORT = Number(getEnvVar('PORT', '3000'));
 export const setupServer = () => {
   const app = express();
 
-  app.use(express.json());
+  app.use(
+    json({
+      type: ['application/json', 'application/vnd.api+json'],
+      limit: '100kb',
+    }),
+  );
   app.use(cors());
 
   app.use(
