@@ -1,7 +1,6 @@
 import Joi from 'joi';
 
-export const registerUserValidationSchema = Joi.object({
-  name: Joi.string().required().min(3).max(20),
+export const loginUserValidationSchema = Joi.object({
   email: Joi.string().email().required().min(5),
   password: Joi.string().required().min(3),
 });
