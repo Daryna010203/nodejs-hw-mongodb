@@ -1,6 +1,7 @@
 import express, { json } from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import { router } from './routers/router.js';
 import { getEnvVar } from './utils/getEnvVar.js';
@@ -27,6 +28,8 @@ export const setupServer = () => {
       },
     }),
   );
+
+  app.use(cookieParser());
 
   app.get('/', (req, res) => {
     res.json({
