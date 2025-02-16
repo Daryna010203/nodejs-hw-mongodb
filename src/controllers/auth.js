@@ -1,4 +1,4 @@
-import { ONE_MONTH } from '../constants/index.js';
+import { ONE_MONTH } from '../constants/time.js';
 import { loginUser, logoutUser, registerUser } from '../services/auth.js';
 import { serializeUser } from '../utils/serializeUser.js';
 import { refreshUsersSession } from '../services/auth.js';
@@ -20,7 +20,7 @@ export const loginUserController = async (req, res) => {
     httpOnly: true,
     expires: new Date(Date.now() + ONE_MONTH),
   });
-  res.cookie('sessionId', session.id, {
+  res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + ONE_MONTH),
   });
@@ -39,7 +39,7 @@ const setupSession = (res, session) => {
     httpOnly: true,
     expires: new Date(Date.now() + ONE_MONTH),
   });
-  res.cookie('sessionId', session.id, {
+  res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + ONE_MONTH),
   });

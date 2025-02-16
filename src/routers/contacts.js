@@ -12,25 +12,42 @@ import { createContactValidationSchema } from '../validation/createContactValida
 import { updateContactValidationSchema } from '../validation/updateContactValidationSchema.js';
 
 import { isValidId } from '../middlewares/isValidId.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 export const contactsRouter = Router();
 
+contactsRouter.use('/', authenticate);
+
 contactsRouter.use('/:contactId', isValidId('contactId'));
 
-contactsRouter.get('/', ctrlWrapper(getContactsController));
+contactsRouter.get(
+  '/',
 
-contactsRouter.get('/:contactId', ctrlWrapper(getContactsByIdController));
+  ctrlWrapper(getContactsController),
+);
+
+contactsRouter.get(
+  '/:contactId',
+
+  ctrlWrapper(getContactsByIdController),
+);
 
 contactsRouter.post(
   '/',
+
   validateBody(createContactValidationSchema),
   ctrlWrapper(createContactController),
 );
 
 contactsRouter.patch(
   '/:contactId',
+
   validateBody(updateContactValidationSchema),
   ctrlWrapper(patchContactsByIdController),
 );
 
-contactsRouter.delete('/:contactId', ctrlWrapper(deleteContactsByIdController));
+contactsRouter.delete(
+  '/:contactId',
+
+  ctrlWrapper(deleteContactsByIdController),
+);
