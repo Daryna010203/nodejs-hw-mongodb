@@ -12,8 +12,10 @@ import { parsFilters } from '../utils/parsFilters.js';
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
+
   const { sortOrder, sortBy } = parseSortParams(req.query);
   const filter = req.query.filter ? parsFilters(req.query.filter) : {};
+  const userId = req.user._id;
 
   const contacts = await getAllContacts({
     page,
@@ -21,6 +23,7 @@ export const getContactsController = async (req, res) => {
     sortOrder,
     sortBy,
     filter,
+    userId,
   });
 
   if (!contacts) {
@@ -39,7 +42,9 @@ export const getContactsController = async (req, res) => {
 
 export const getContactsByIdController = async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await getContactById(contactId);
+  const userId = req.user._id;
+
+  const contact = await getContactById(contactId, userId);
 
   if (!contact) {
     throw createHttpError(404, 'Contact not found');
@@ -83,7 +88,8 @@ export const patchContactsByIdController = async (req, res, next) => {
 
 export const deleteContactsByIdController = async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await deleteContactById(contactId);
+  const userId = req.user._id;
+  const contact = await deleteContactById(contactId, userId);
 
   if (!contact) {
     throw createHttpError(404, 'Contact not found');
