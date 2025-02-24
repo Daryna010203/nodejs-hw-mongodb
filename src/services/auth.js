@@ -5,6 +5,8 @@ import bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { FIFTEEN_MINUTES, ONE_MONTH } from '../constants/time.js';
 import { SessionsCollection } from '../db/models/session.js';
+import { sendEmail } from '../utils/sendEmail.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const registerUser = async ({ email, password, name }) => {
   const user = await UsersCollection.findOne({ email });
@@ -85,4 +87,18 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
 
 export const logoutUser = async (sessionId) => {
   await SessionsCollection.deleteOne({ _id: sessionId });
+};
+
+export const requestResetPasswordEmail = async (email) => {
+  const user = await UsersCollection.findOne({ email });
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+  await sendEmail({
+    to: email,
+    subject: 'Reset password',
+    from: getEnvVar('SMTP_FROM'),
+    html: '<h1>Hello world!</h1>',
+  });
 };

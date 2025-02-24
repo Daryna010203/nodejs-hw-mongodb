@@ -1,5 +1,10 @@
 import { ONE_MONTH } from '../constants/time.js';
-import { loginUser, logoutUser, registerUser } from '../services/auth.js';
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+  requestResetPasswordEmail,
+} from '../services/auth.js';
 import { serializeUser } from '../utils/serializeUser.js';
 import { refreshUsersSession } from '../services/auth.js';
 
@@ -72,3 +77,23 @@ export const logoutUserController = async (req, res) => {
 
   res.status(204).send();
 };
+
+export const requestResetPasswordEmailController = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log('Email received for reset:', email);
+
+    await requestResetPasswordEmail(email);
+
+    res.json({
+      status: 200,
+      message: 'Successfully sent reset password link',
+      data: {},
+    });
+  } catch (err) {
+    console.error('Controller error:', err);
+    res.status(err.status || 500).json({ message: err.message });
+  }
+};
+
+export const resetPasswordController = async (req, res) => {};
