@@ -2,11 +2,20 @@ import createHttpError from 'http-errors';
 import { UsersCollection } from '../db/models/user.js';
 
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import fs from 'node:fs';
+import path from 'node:path';
+import Handlebars from 'handlebars';
 import { randomBytes } from 'crypto';
 import { FIFTEEN_MINUTES, ONE_MONTH } from '../constants/time.js';
 import { SessionsCollection } from '../db/models/session.js';
 import { sendEmail } from '../utils/sendEmail.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
+import { TEMPLATES_DIR_PATH } from '../constants/path.js';
+
+const resetEmailTemplate = fs
+  .readFileSync(path.join(TEMPLATES_DIR_PATH, 'reset-password-email.html'))
+  .toString();
 
 export const registerUser = async ({ email, password, name }) => {
   const user = await UsersCollection.findOne({ email });
@@ -95,10 +104,26 @@ export const requestResetPasswordEmail = async (email) => {
   if (!user) {
     throw createHttpError(404, 'User not found');
   }
+
+  const token = jwt.sign({ sub: user._id, email }, getEnvVar('JWT_SECRET'), {
+    expiresIn: '15m',
+  });
+
+  const resetPasswordLink = `${getEnvVar(
+    'FRONTEND_DOMAIN',
+  )}/reset-password?token=${token}`;
+
+  const template = Handlebars.compile(resetEmailTemplate);
+
+  const html = template({
+    name: user.name,
+    link: resetPasswordLink,
+  });
+
   await sendEmail({
     to: email,
     subject: 'Reset password',
     from: getEnvVar('SMTP_FROM'),
-    html: '<h1>Hello world!</h1>',
+    html,
   });
 };
