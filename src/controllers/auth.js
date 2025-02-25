@@ -4,6 +4,7 @@ import {
   logoutUser,
   registerUser,
   requestResetPasswordEmail,
+  resetPassword,
 } from '../services/auth.js';
 import { serializeUser } from '../utils/serializeUser.js';
 import { refreshUsersSession } from '../services/auth.js';
@@ -96,4 +97,17 @@ export const requestResetPasswordEmailController = async (req, res) => {
   }
 };
 
-export const resetPasswordController = async (req, res) => {};
+export const resetPasswordController = async (req, res) => {
+  try {
+    await resetPassword(req.body);
+
+    res.json({
+      status: 200,
+      message: 'Successfully reset password',
+      data: {},
+    });
+  } catch (err) {
+    console.error('Controller error:', err);
+    res.status(err.status || 500).json({ message: err.message });
+  }
+};
