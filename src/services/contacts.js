@@ -68,17 +68,22 @@ export const createContact = async (payload) => {
   return contact;
 };
 
-export const patchContactById = async (contactId, userId, payload) => {
+export const patchContactById = async (contactId, userId, payload, options) => {
   const contact = await ContactsCollection.findOneAndUpdate(
     { _id: contactId, userId },
     payload,
     {
       new: true,
       includeResultMetadata: true,
+      ...options,
     },
   );
+  if (!contact || !contact.value) return null;
 
-  return contact.value;
+  return {
+    contact: contact.value,
+    isNew: Boolean(contact?.lastErrorObject?.upserted),
+  };
 };
 
 export const deleteContactById = async (contactId, userId) => {
