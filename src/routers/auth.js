@@ -30,12 +30,12 @@ authRouter.post('/refresh-session', ctrlWrapper(refreshUserSessionController));
 authRouter.post('/logout', ctrlWrapper(logoutUserController));
 
 authRouter.post(
-  '/request-reset-password-email',
+  '/send-reset-email',
   validateBody(requestResetPasswordEmailValidationSchema),
   ctrlWrapper(requestResetPasswordEmailController),
 );
 authRouter.post(
-  '/reset-password',
+  '/reset-pwd',
   validateBody(resetPasswordValidationSchema),
   ctrlWrapper(resetPasswordController),
 );
