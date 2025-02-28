@@ -2,17 +2,20 @@ import { Router } from 'express';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { registerUserValidationSchema } from '../validation/registerUserValidationSchema.js';
 import {
+  getGoogleOAuthUrlController,
   loginUserController,
   logoutUserController,
   refreshUserSessionController,
   registerUserController,
   requestResetPasswordEmailController,
   resetPasswordController,
+  verifyGoogleOauthController,
 } from '../controllers/auth.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { loginUserValidationSchema } from '../validation/loginUserValidationSchema.js';
 import { requestResetPasswordEmailValidationSchema } from '../validation/requestResetPasswordEmailValidationSchema.js';
 import { resetPasswordValidationSchema } from '../validation/resetPasswordValidationSchema.js';
+import { verifyGoogleoauthCodeValidationSchema } from '../validation/verifyGoogleoauthCodeValidationSchema.js';
 
 export const authRouter = Router();
 
@@ -38,4 +41,15 @@ authRouter.post(
   '/reset-pwd',
   validateBody(resetPasswordValidationSchema),
   ctrlWrapper(resetPasswordController),
+);
+
+authRouter.post(
+  '/get-google-oauth-url',
+  ctrlWrapper(getGoogleOAuthUrlController),
+);
+
+authRouter.post(
+  '/verify-google-code',
+  validateBody(verifyGoogleoauthCodeValidationSchema),
+  ctrlWrapper(verifyGoogleOauthController),
 );

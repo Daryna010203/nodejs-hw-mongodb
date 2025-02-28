@@ -1,10 +1,12 @@
 import { ONE_MONTH } from '../constants/time.js';
 import {
+  getGoogleOauthUrl,
   loginUser,
   logoutUser,
   registerUser,
   requestResetPasswordEmail,
   resetPassword,
+  verifyGoogleOauthCode,
 } from '../services/auth.js';
 import { serializeUser } from '../utils/serializeUser.js';
 import { refreshUsersSession } from '../services/auth.js';
@@ -110,4 +112,25 @@ export const resetPasswordController = async (req, res) => {
     console.error('Controller error:', err);
     res.status(err.status || 500).json({ message: err.message });
   }
+};
+
+export const getGoogleOAuthUrlController = async (req, res) => {
+  const url = getGoogleOauthUrl();
+  res.json({
+    status: 200,
+    message: 'Successfully get Google OAuth url!',
+    data: { url },
+  });
+};
+
+export const verifyGoogleOauthController = async (req, res) => {
+  const { code } = req.body;
+  const session = await verifyGoogleOauthCode(code);
+  setupSession(res, session);
+
+  res.json({
+    status: 200,
+    message: 'Successfully logged in via Google OAuth!',
+    data: { accessToken: session.accessToken },
+  });
 };

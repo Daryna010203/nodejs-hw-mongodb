@@ -13,6 +13,12 @@ import { sendEmail } from '../utils/sendEmail.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
 import { TEMPLATES_DIR_PATH } from '../constants/path.js';
 
+import {
+  getFullNameFromGoogleTokenPayload,
+  googleOAuthClient,
+  validateCode,
+} from '../utils/googleOAuth.js';
+
 const resetEmailTemplate = fs
   .readFileSync(path.join(TEMPLATES_DIR_PATH, 'reset-password-email.html'))
   .toString();
@@ -158,4 +164,39 @@ export const resetPassword = async (payload) => {
     { _id: user._id },
     { password: hashedPassword },
   );
+};
+
+export const getGoogleOauthUrl = () =>
+  googleOAuthClient.generateAuthUrl({
+    access_type: 'offline',
+    scope: [
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+    ],
+  });
+
+export const verifyGoogleOauthCode = async (code) => {
+  const ticket = await validateCode(code);
+
+  const payload = ticket.getPayload();
+
+  if (!payload) throw createHttpError(401);
+
+  let user = await UsersCollection.findOne({ email: payload.email });
+
+  if (!user) {
+    const password = await bcrypt.hash(randomBytes(10), 10);
+    user = await UsersCollection.create({
+      email: payload.email,
+      name: getFullNameFromGoogleTokenPayload(payload),
+      password,
+    });
+  }
+
+  const newSession = createSession();
+
+  return await SessionsCollection.create({
+    userId: user._id,
+    ...newSession,
+  });
 };
