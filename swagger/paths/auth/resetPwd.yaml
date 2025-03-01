@@ -1,0 +1,43 @@
+tags:
+  - Auth
+summary: Reset User Password
+operationId: resetPwd
+description: 'Reset user password with url from sended reset mail'
+security: []
+requestBody:
+  content:
+    application/json:
+      schema:
+        required:
+          - password
+          - token
+        properties:
+          password:
+            type: string
+            example: '123456asd'
+          token:
+            type: string
+            example: '${json web token}'
+responses:
+  '200':
+    description: 'Change user password by provided new password and jwt'
+    content:
+      application/json:
+        schema:
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: 'Password has been successfully reset'
+            data: {}
+  '401':
+    $ref: ../../components/responses/401.yaml
+  '500':
+    $ref: ../../components/responses/500.yaml
+    description: 'Failed to send the email, please try again later.'

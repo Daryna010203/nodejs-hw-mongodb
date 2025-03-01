@@ -43,7 +43,7 @@ authRouter.post(
   ctrlWrapper(resetPasswordController),
 );
 
-authRouter.post(
+authRouter.get(
   '/get-google-oauth-url',
   ctrlWrapper(getGoogleOAuthUrlController),
 );
